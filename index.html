@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEON DUEL — 赛博朋克 TCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg-void:#0a0a0f;--bg-panel:#111122;--bg-card:#14142a;--cyan:#00f0ff;--pink:#ff0080;--purple:#7b2ff7;--gold:#ffd700;--navy:#1a1a2e;--silver:#8899aa;--text:#c8d0d8;--text-dim:#5a6a7a;--glow-cyan:0 0 15px rgba(0,240,255,.4),0 0 40px rgba(0,240,255,.15);--glow-pink:0 0 15px rgba(255,0,128,.4),0 0 40px rgba(255,0,128,.15);--glow-purple:0 0 15px rgba(123,47,247,.4),0 0 40px rgba(123,47,247,.15);--glow-gold:0 0 15px rgba(255,215,0,.4),0 0 40px rgba(255,215,0,.15);--radius:10px;--card-w:200px}
+html{font-size:16px}
+body{font-family:Inter,sans-serif;background:var(--bg-void);color:var(--text);min-height:100vh;overflow-x:hidden;background-image:radial-gradient(ellipse at 20% 50%,rgba(0,240,255,.03) 0%,transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(255,0,128,.03) 0%,transparent 60%)}
+.header{position:sticky;top:0;z-index:100;backdrop-filter:blur(20px) saturate(1.2);background:rgba(10,10,15,.85);border-bottom:1px solid rgba(0,240,255,.1);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px}
+.header-logo{font-family:Orbitron,sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--cyan),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px;text-transform:uppercase}
+.header-logo::after{content:"//";font-family:JetBrains Mono,monospace;-webkit-text-fill-color:var(--text-dim);font-size:.7rem;margin-left:8px}
+.nav{display:flex;gap:4px}
+.nav-btn{background:transparent;border:none;color:var(--text-dim);font-size:.85rem;font-weight:500;padding:8px 16px;border-radius:6px;cursor:pointer;transition:all .25s;position:relative}
+.nav-btn:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.nav-btn.active{color:var(--cyan)}
+.nav-btn.active::after{content:"";position:absolute;bottom:-1px;left:16px;right:16px;height:2px;background:var(--cyan);box-shadow:var(--glow-cyan)}
+.view{display:none;padding:24px;max-width:1200px;margin:0 auto}
+.view.active{display:block}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:20px;padding:4px}
+.card{--rarity-color:var(--cyan);--rarity-glow:var(--glow-cyan);position:relative;width:100%;aspect-ratio:5/7;background:var(--bg-card);border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);cursor:pointer;overflow:hidden;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;user-select:none}
+.card[data-rarity="Rare"]{--rarity-color:var(--pink);--rarity-glow:var(--glow-pink)}
+.card[data-rarity="Epic"]{--rarity-color:var(--purple);--rarity-glow:var(--glow-purple)}
+.card[data-rarity="Legendary"]{--rarity-color:var(--gold);--rarity-glow:var(--glow-gold)}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,transparent 40%,rgba(0,240,255,.08) 45%,rgba(0,240,255,.15) 50%,rgba(0,240,255,.08) 55%,transparent 60%,transparent 100%);opacity:0;transition:opacity .4s;pointer-events:none;z-index:2}
+.card:hover::before{opacity:1;animation:scan-line 1.2s ease-in-out infinite}
+@keyframes scan-line{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
+.card::after{content:"";position:absolute;inset:-1px;border-radius:calc(var(--radius)+1px);background:var(--rarity-color);opacity:0;transition:opacity .3s;z-index:-1;filter:blur(1px)}
+.card:hover::after{opacity:.5;animation:glow-pulse 1.5s ease-in-out infinite}
+@keyframes glow-pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+.card:hover{transform:translateY(-6px) scale(1.02);box-shadow:var(--rarity-glow);border-color:var(--rarity-color)}
+.card-particle{position:absolute;width:3px;height:3px;border-radius:50%;pointer-events:none;z-index:3;animation:particle-float 1.2s ease-out forwards}
+@keyframes particle-float{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+.card-badge{position:absolute;top:8px;right:8px;font-family:JetBrains Mono,monospace;font-size:.65rem;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);border:1px solid var(--rarity-color);color:var(--rarity-color);z-index:5}
+.card-art{flex:1;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 30%,rgba(0,240,255,.08) 0%,transparent 60%),radial-gradient(circle at 70% 70%,rgba(255,0,128,.05) 0%,transparent 60%);position:relative;overflow:hidden}
+.card-art-icon{font-family:Orbitron,sans-serif;font-size:2.8rem;font-weight:900;color:var(--rarity-color);opacity:.3;text-shadow:0 0 30px var(--rarity-color)}
+.card-art-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,240,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.04) 1px,transparent 1px);background-size:20px 20px;opacity:0;transition:opacity .3s}
+.card:hover .card-art-grid{opacity:1}
+.card-body{padding:10px 12px 12px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);position:relative;z-index:4}
+.card-name{font-family:Orbitron,sans-serif;font-weight:700;font-size:.8rem;color:#e0e8f0;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-type{font-size:.65rem;color:var(--text-dim);margin-bottom:6px}
+.card-stats{display:flex;gap:10px;font-family:JetBrains Mono,monospace;font-size:.7rem}
+.card-stat{display:flex;align-items:center;gap:3px}
+.card-stat .label{color:var(--text-dim);font-size:.6rem}
+.card-stat .value{font-weight:600}
+.card-stat .value.pink{color:var(--pink)}
+.card-stat .value.cyan{color:var(--cyan)}
+.battle-hud{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:rgba(0,0,0,.3);border:1px solid rgba(0,240,255,.1);border-radius:10px;margin-bottom:8px}
+.battle-hud-hp{font-family:JetBrains Mono,monospace;font-size:1.6rem;font-weight:700}
+.battle-zone{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:16px;position:relative}
+.battle-zone-label{position:absolute;top:-10px;left:16px;font-family:Orbitron,sans-serif;font-size:.6rem;font-weight:600;color:var(--text-dim);background:var(--bg-void);padding:0 8px;text-transform:uppercase;letter-spacing:2px}
+.battle-hand{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:8px 0}
+.battle-hand .card{width:140px;aspect-ratio:5/7}
+.battle-hand .card.playable{border-color:var(--cyan)}
+.battle-hand .card.not-playable{opacity:.5;filter:grayscale(.5);cursor:not-allowed}
+.battle-log{max-height:120px;overflow-y:auto;font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--text-dim);padding:8px 12px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.04);border-radius:8px;margin-top:8px}
+.battle-start-btn{font-family:Orbitron,sans-serif;font-weight:700;font-size:.9rem;padding:14px 40px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--pink));color:#000;cursor:pointer;text-transform:uppercase;letter-spacing:2px}
+.db-deck-card{display:flex;align-items:center;gap:10px;padding:8px 10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:8px;cursor:pointer;transition:all .2s}
+.db-deck-card:hover{background:rgba(255,0,128,.08);border-color:var(--pink)}
+.dcc-color{width:3px;height:32px;border-radius:2px;flex-shrink:0}
+.dcc-name{font-family:Orbitron,sans-serif;font-size:.75rem;font-weight:600}
+.dcc-cost{font-family:JetBrains Mono,monospace;font-size:.65rem;color:var(--cyan)}
+.dcc-remove{font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--pink);opacity:.5}
+.db-deck-card:hover .dcc-remove{opacity:1}
+.filter-btn{background:transparent;border:1px solid var(--navy);color:var(--text-dim);font-size:.78rem;padding:5px 12px;border-radius:6px;cursor:pointer;transition:all .2s}
+.filter-btn:hover{border-color:var(--purple);color:var(--text)}
+.filter-btn.active{background:var(--purple);border-color:var(--purple);color:#fff}
+@media(max-width:768px){.header{padding:0 12px;height:56px}.header-logo{font-size:1.1rem}.header-logo::after{display:none}.nav-btn{padding:6px 10px;font-size:.78rem}.view{padding:12px}.card-grid{gap:12px}:root{--card-w:140px}.battle-hand .card{width:110px}.battle-hud-hp{font-size:1.2rem}}
+@media(max-width:480px){.card-grid{grid-template-columns:repeat(2,1fr)}.battle-hand .card{width:90px}}
+@media(prefers-reduced-motion:reduce){.card::before{display:none}.card:hover{transform:none}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}</style>
+</head>
+<body>
+<header class="header">
+<div class="header-logo">Neon Duel</div>
+<nav class="nav">
+<button class="nav-btn active" data-view="collection">集卡册</button>
+<button class="nav-btn" data-view="deckbuilder">组卡器</button>
+<button class="nav-btn" data-view="battle">对战</button>
+</nav>
+<div class="header-stats" style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--text-dim);display:flex;gap:12px">
+<span><span class="dot-cyan"></span> <span id="total-cards">0</span></span>
+<span><span class="dot-pink"></span> <span id="deck-count-hdr">0</span></span></div>
+</header>
+<section class="view active" id="view-collection">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+<h2 style="font-family:Orbitron,sans-serif;font-weight:600;font-size:1.1rem;color:var(--cyan)">// 卡牌图鉴</h2>
+<div id="filters" class="filters" style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="filter-btn active" data-filter="all">全部</button>
+<button class="filter-btn" data-filter="ICE">ICE</button>
+<button class="filter-btn" data-filter="Daemon">Daemon</button>
+<button class="filter-btn" data-filter="Cyberware">义体</button>
+<button class="filter-btn" data-filter="Hardware">硬件</button>
+<button class="filter-btn" data-filter="Hack">入侵</button></div></div>
+<div class="card-grid" id="collection-grid"></div></section>
+<section class="view" id="view-deckbuilder">
+<div style="display:grid;grid-template-columns:1fr 300px;gap:24px;min-height:calc(100vh - 140px)">
+<div><h3 style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.9rem;color:var(--cyan);margin-bottom:16px">// 卡牌池 <span style="font-weight:400;font-size:.75rem;color:var(--text-dim)">点击卡牌加入牌组</span></h3>
+<div class="card-grid" id="db-pool-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px"></div></div>
+<div><h3 style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.9rem;color:var(--cyan);margin-bottom:16px">// 当前牌组 <span id="deck-count" style="color:var(--pink);font-weight:400;font-size:.75rem">0/10</span></h3>
+<div id="deck-list"><div class="db-empty" style="text-align:center;padding:40px 20px;color:var(--text-dim);font-size:.85rem;border:1px dashed var(--navy);border-radius:8px">点击左侧卡牌组建你的牌组<br>上限10张</div></div></div></div></section>
+<section class="view" id="view-battle">
+<div style="display:flex;flex-direction:column;min-height:calc(100vh - 140px)">
+<div id="battle-start-screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:20px">
+<h2 style="font-family:Orbitron,sans-serif;font-weight:700;font-size:1.4rem;color:var(--text-dim)">// 准备接入</h2>
+<p style="color:var(--text-dim);max-width:400px;text-align:center">需要至少5张卡牌才能开始对战。在「组卡器」中选好卡牌后回到这里。</p>
+<button class="battle-start-btn" id="battle-start-btn">开始对战<span style="display:block;font-size:.6rem;opacity:.7;margin-top:4px;font-weight:400;letter-spacing:0;text-transform:none">对手: AI · 自动匹配 · 回合制</span></button></div>
+<div class="battle-field" id="battle-field" style="display:none;flex-direction:column;gap:12px;padding:16px 0">
+<div class="battle-hud">
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font-family:Orbitron,sans-serif;font-size:.65rem;color:var(--text-dim);letter-spacing:1px">// 玩家</span>
+<span class="battle-hud-hp" style="color:var(--cyan)" id="player-hp">30</span>
+<span style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--cyan)">⚡ <span id="player-energy">0</span>/<span id="player-max-energy">0</span></span>
+<div style="width:100%;height:4px;background:var(--navy);border-radius:2px;overflow:hidden"><div id="player-hp-bar" style="height:100%;background:var(--cyan);border-radius:2px;transition:width .5s ease;width:100%"></div></div></div>
+<div style="text-align:center">
+<div id="battle-turn" style="font-family:Orbitron,sans-serif;font-size:.7rem;color:var(--text-dim)">回合 1</div>
+<div id="battle-status" style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--text);margin-top:4px;min-height:1.2em">选择一张卡牌打出</div></div>
+<div style="text-align:right;display:flex;flex-direction:column;gap:4px">
+<span style="font-family:Orbitron,sans-serif;font-size:.65rem;color:var(--text-dim);letter-spacing:1px">// AI</span>
+<span class="battle-hud-hp" style="color:var(--pink)" id="ai-hp">30</span>
+<span style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--pink)">⚡ <span id="ai-energy">0</span></span>
+<div style="width:100%;height:4px;background:var(--navy);border-radius:2px;overflow:hidden"><div id="ai-hp-bar" style="height:100%;background:var(--pink);border-radius:2px;transition:width .5s ease;width:100%"></div></div></div></div>
+<div class="battle-zone"><span class="battle-zone-label">// 对手场域</span>
+<div class="battle-hand" id="ai-hand"></div></div>
+<div class="battle-zone"><span class="battle-zone-label">// 你的手牌</span>
+<div class="battle-hand" id="player-hand"></div></div>
+<div style="display:flex;gap:10px;justify-content:center;padding:12px 0">
+<button class="battle-btn" id="end-turn-btn" style="background:var(--cyan);color:#000;font-family:Orbitron,sans-serif;font-weight:600;font-size:.75rem;padding:10px 24px;border:none;border-radius:6px;cursor:pointer;letter-spacing:1px">结束回合</button>
+<button class="battle-btn" id="restart-btn" style="background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);font-family:Orbitron,sans-serif;font-weight:600;font-size:.75rem;padding:10px 24px;border-radius:6px;cursor:pointer;letter-spacing:1px">重新开局</button></div>
+<div class="battle-log" id="battle-log"><div class="log-entry">// 战斗日志初始化...</div></div></div></div></section>
+<div id="victory-modal" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+<div style="background:var(--bg-panel);border:1px solid var(--cyan);border-radius:16px;padding:40px 48px;text-align:center">
+<h2 style="font-family:Orbitron,sans-serif;font-weight:900;font-size:1.6rem;color:var(--cyan);margin-bottom:8px">// 入侵成功</h2>
+<p style="color:var(--text-dim);margin-bottom:24px">敌方系统已被攻破。数据已提取。</p>
+<button onclick="resetBattle()" style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.8rem;padding:12px 32px;border:none;border-radius:6px;cursor:pointer;background:var(--cyan);color:#000">再来一局</button></div></div>
+<div id="defeat-modal" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+<div style="background:var(--bg-panel);border:1px solid var(--pink);border-radius:16px;padding:40px 48px;text-align:center">
+<h2 style="font-family:Orbitron,sans-serif;font-weight:900;font-size:1.6rem;color:var(--pink);margin-bottom:8px">// 连接断开</h2>
+<p style="color:var(--text-dim);margin-bottom:24px">你的系统已被反制。重新配置后重试。</p>
+<button onclick="resetBattle()" style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.8rem;padding:12px 32px;border:1px solid var(--pink);border-radius:6px;cursor:pointer;background:transparent;color:var(--pink)">重新连接</button></div></div><script>
+const C=[
+{id:1,name:'ICE WALL',type:'ICE',rarity:'Common',cost:2,p:0,d:4,icon:'\u258c'},
+{id:2,name:'DATA LEECH',type:'Daemon',rarity:'Common',cost:1,p:2,d:0,icon:'\u224b'},
+{id:3,name:'CYBER CLAW',type:'Cyberware',rarity:'Common',cost:2,p:3,d:0,icon:'\u2694'},
+{id:4,name:'SPINE COOLER',type:'Cyberware',rarity:'Common',cost:1,p:0,d:2,icon:'\u2744'},
+{id:5,name:'CODE WORM',type:'Daemon',rarity:'Common',cost:2,p:3,d:0,icon:'\u2248'},
+{id:6,name:'FRAG GRENADE',type:'Hardware',rarity:'Common',cost:2,p:4,d:0,icon:'💥'},
+{id:7,name:'BEACON JAMMER',type:'Hardware',rarity:'Common',cost:1,p:1,d:1,icon:'\u2573'},
+{id:8,name:'SMOKE PROXY',type:'Daemon',rarity:'Common',cost:1,p:0,d:3,icon:'\u25ce'},
+{id:9,name:'NEURAL OVERRIDE',type:'Hack',rarity:'Rare',cost:3,p:5,d:0,icon:'\u25c8'},
+{id:10,name:'BLACK ICE',type:'ICE',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c6'},
+{id:11,name:'EMP BURST',type:'Hardware',rarity:'Rare',cost:3,p:4,d:0,icon:'\u26a1'},
+{id:12,name:'VIRAL CASCADE',type:'Daemon',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c9'},
+{id:13,name:'GHOST PROTOCOL',type:'Hack',rarity:'Epic',cost:5,p:0,d:0,icon:'\u25d0'},
+{id:14,name:'QUANTUM ENGINE',type:'Hardware',rarity:'Epic',cost:6,p:8,d:0,icon:'\u25c8'},
+{id:15,name:'SHADOW ICE',type:'ICE',rarity:'Epic',cost:5,p:0,d:8,icon:'\u25c8'},
+{id:16,name:'PHOENIX PROTOCOL',type:'Hack',rarity:'Legendary',cost:7,p:10,d:0,icon:'\u25c6'}];
+const CC={Common:'#00f0ff',Rare:'#ff0080',Epic:'#7b2ff7',Legendary:'#ffd700'};
+const MX=10,HP=30;
+let dk=[],bt=null;
+
+function ch(c,e){
+const cl=CC[c.rarity];
+return '<div class="card" data-id="'+c.id+'" data-rarity="'+c.rarity+'" '+e+'>'+
+'<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
+'<div class="card-art"><div class="card-art-grid"></div>'+
+'<div class="card-art-icon" style="color:'+cl+'">'+c.icon+'</div></div>'+
+'<div class="card-body"><div class="card-name">'+c.name+'</div>'+
+'<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
+'<div class="card-stats">'+
+(c.p>0?'<span class="card-stat"><span class="label">ATK</span> <span class="value pink">'+c.p+'</span></span>':'')+
+(c.d>0?'<span class="card-stat"><span class="label">DEF</span> <span class="value cyan">'+c.d+'</span></span>':'')+
+(c.p===0&&c.d===0?'<span class="card-stat"><span class="label" style="color:var(--purple)">SPL</span></span>':'')+
+'</div></div></div>';}
+
+function rC(f){
+const g=document.getElementById('collection-grid');
+const fl=f==='all'?C:C.filter(x=>x.type===f);
+g.innerHTML=fl.map(x=>ch(x,'')).join('');
+g.querySelectorAll('.card').forEach(e=>sFX(e));}
+
+function rP(){
+const g=document.getElementById('db-pool-grid');
+g.innerHTML=C.map(c=>{
+const n=dk.filter(x=>x.id===c.id).length;
+const cl=n>=2?'in-deck':'';
+const bg=n>0?'<span class="deck-count">'+n+'</span>':'';
+return '<div class="card '+cl+'" data-id="'+c.id+'">'+bg+
+'<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
+'<div class="card-art"><div class="card-art-grid"></div>'+
+'<div class="card-art-icon" style="color:'+CC[c.rarity]+'">'+c.icon+'</div></div>'+
+'<div class="card-body"><div class="card-name">'+c.name+'</div>'+
+'<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
+'<div class="card-stats">'+
+(c.p>0?'<span class="card-stat"><span class="label">ATK</span> <span class="value pink">'+c.p+'</span></span>':'')+
+(c.d>0?'<span class="card-stat"><span class="label">DEF</span> <span class="value cyan">'+c.d+'</span></span>':'')+
+(c.p===0&&c.d===0?'<span class="card-stat"><span class="label" style="color:var(--purple)">SPL</span></span>':'')+
+'</div></div></div>';}).join('');
+g.querySelectorAll('.card:not(.in-deck)').forEach(e=>{
+e.addEventListener('click',()=>aD(parseInt(e.dataset.id)));sFX(e);});}
+
+function rL(){
+const el=document.getElementById('deck-list');
+document.getElementById('deck-count').textContent=dk.length+'/'+MX;
+if(dk.length===0){el.innerHTML='<div class="db-empty" style="text-align:center;padding:40px 20px;color:var(--text-dim);font-size:.85rem;border:1px dashed var(--navy);border-radius:8px">点击左侧卡牌组建你的牌组<br>上限10张</div>';return;}
+el.innerHTML=dk.map((x,i)=>{
+return '<div class="db-deck-card" data-idx="'+i+'"><div class="dcc-color" style="background:'+CC[x.rarity]+'"></div>'+
+'<div class="dcc-info"><div class="dcc-name" style="color:'+CC[x.rarity]+'">'+x.name+'</div>'+
+'<div class="dcc-cost">'+x.type+' \u26a1'+x.cost+'</div></div><span class="dcc-remove">\u2715</span></div>';}).join('');
+el.querySelectorAll('.db-deck-card').forEach(e=>{
+e.addEventListener('click',function(){dk.splice(parseInt(this.dataset.idx),1);rP();rL();uH();});});}
+
+function aD(id){
+if(dk.length>=MX)return;
+if(dk.filter(x=>x.id===id).length>=2)return;
+const c=C.find(x=>x.id===id);if(!c)return;
+dk.push(c);rP();rL();uH();}
+
+function uH(){document.getElementById('total-cards').textContent=C.length;document.getElementById('deck-count-hdr').textContent=dk.length;}
+
+function sFX(el){
+el.addEventListener('mouseenter',function(){
+if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+for(let i=0;i<6;i++){
+const p=document.createElement('div');p.className='card-particle';
+const a=(i/6)*Math.PI*2,dist=40+Math.random()*30;
+const col=getComputedStyle(this).getPropertyValue('--rarity-color').trim()||'var(--cyan)';
+p.style.cssText='left:'+(50+Math.random()*20-10)+'%;top:'+(50+Math.random()*20-10)+'%;background:'+col+';--dx:'+(Math.cos(a)*dist)+'px;--dy:'+(-Math.abs(Math.sin(a)*dist))+'px;animation-duration:'+(.8+Math.random()*.6)+'s';
+this.appendChild(p);setTimeout(()=>p.remove(),1400);}});}
+
+document.querySelectorAll('.nav-btn').forEach(b=>{
+b.addEventListener('click',function(){
+document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+this.classList.add('active');
+document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+document.getElementById('view-'+this.dataset.view).classList.add('active');});});
+
+document.getElementById('filters').addEventListener('click',function(e){
+if(!e.target.classList.contains('filter-btn'))return;
+document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+e.target.classList.add('active');rC(e.target.dataset.filter);});
+
+function sh(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function sB(){
+if(dk.length<5){document.getElementById('battle-status').textContent='牌组不足5张';return;}
+const pD=sh([...dk]),aD=sh([...dk]);
+bt={n:1,p:{hp:HP,en:0,me:0,dk:pD,hd:[],df:0},a:{hp:HP,en:0,me:0,dk:aD,hd:[],df:0},end:0,pp:0,gb:0};
+for(let i=0;i<4;i++){dw('p');dw('a');}
+document.getElementById('battle-start-screen').style.display='none';
+document.getElementById('battle-field').style.display='flex';
+uB();lg('\u002f\u002f \u6218\u6597\u5f00\u59cb\u3002\u5148\u624b: \u73a9\u5bb6');}
+
+function dw(s){const st=bt[s];if(st.dk.length===0||st.hd.length>=6)return;st.hd.push(st.dk.pop());}
+function lg(m,cl){const e=document.getElementById('battle-log');e.innerHTML+='<div class="log-entry '+cl+'">'+m+'</div>';e.scrollTop=e.scrollHeight;}
+
+function uB(){
+const s=bt;
+document.getElementById('player-hp').textContent=s.p.hp;
+document.getElementById('ai-hp').textContent=Math.max(0,s.a.hp);
+document.getElementById('player-hp-bar').style.width=(s.p.hp/HP*100)+'%';
+document.getElementById('ai-hp-bar').style.width=(s.a.hp/HP*100)+'%';
+document.getElementById('player-energy').textContent=s.p.en;
+document.getElementById('player-max-energy').textContent=s.p.me;
+document.getElementById('ai-energy').textContent=s.a.en;
+document.getElementById('battle-turn').textContent='\u56de\u5408 '+s.n;
+const ph=document.getElementById('player-hand');
+ph.innerHTML=s.p.hd.map((c,i)=>{
+const pl=!s.end&&c.cost<=s.p.en&&!s.pp;
+return '<div class="card '+(pl?'playable':'not-playable')+'" data-idx="'+i+'" data-rarity="'+c.rarity+'">'+
+'<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
+'<div class="card-art"><div class="card-art-grid"></div>'+
+'<div class="card-art-icon" style="color:'+CC[c.rarity]+'">'+c.icon+'</div></div>'+
+'<div class="card-body"><div class="card-name">'+c.name+'</div>'+
+'<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
+'<div class="card-stats">'+
+(c.p>0?'<span class="card-stat"><span class="label">ATK</span> <span class="value pink">'+c.p+'</span></span>':'')+
+(c.d>0?'<span class="card-stat"><span class="label">DEF</span> <span class="value cyan">'+c.d+'</span></span>':'')+
+(c.p===0&&c.d===0?'<span class="card-stat"><span class="label" style="color:var(--purple)">SPL</span></span>':'')+
+'</div></div></div>';}).join('');
+ph.querySelectorAll('.card.playable').forEach(e=>{e.addEventListener('click',()=>pC(parseInt(e.dataset.idx)));sFX(e);});
+const ah=document.getElementById('ai-hand');
+ah.innerHTML=s.a.hd.map(()=>'<div class="card" style="cursor:default;background:linear-gradient(135deg,#1a1a2e,#0a0a0f);border-color:rgba(255,0,128,.2)">'+
+'<div class="card-art" style="background:radial-gradient(circle,rgba(255,0,128,.05),transparent)">'+
+'<div class="card-art-icon" style="color:rgba(255,0,128,.15);font-size:1.8rem">?</div></div>'+
+'<div class="card-body" style="background:rgba(0,0,0,.6)">'+
+'<div class="card-name" style="color:var(--text-dim)">??</div>'+
+'<div class="card-type" style="color:rgba(90,106,122,.5)">???</div></div></div>').join('');
+document.getElementById('end-turn-btn').disabled=s.end||s.pp;
+document.getElementById('battle-status').textContent=s.gb?'\ud83d\udc7b \u5e7d\u7075\u534f\u8bae\u6fc0\u6d3b \u2014 \u4e0b\u4e00\u5f20\u653b\u51fb\u5361\u4f24\u5bb3\u7ffb\u500d':(s.pp?'\u7b49\u5f85 AI \u56de\u5408...':'\u9009\u62e9\u4e00\u5f20\u5361\u724c\u6253\u51fa');}
+
+function pC(idx){
+const s=bt;if(s.end||s.pp)return;
+const c=s.p.hd[idx];if(!c||c.cost>s.p.en)return;
+s.p.en-=c.cost;s.p.hd.splice(idx,1);
+let d=c.p;
+if(s.gb&&d>0){d*=2;s.gb=0;lg('\ud83d\udc7b \u5e7d\u7075\u534f\u8bae\u89e6\u53d1! \u4f24\u5bb3\u7ffb\u500d','special');}
+if(c.id===13){s.gb=1;lg('\ud83d\udc7b \u5e7d\u7075\u534f\u8bae\u5df2\u6fc0\u6d3b','special');}
+else if(d>0){const ad=Math.max(0,d-s.a.df);s.a.df=Math.max(0,s.a.df-d);s.a.hp-=ad;lg('\ud83d\udd34 '+c.name+' \u9020\u6210 '+ad+' \u70b9\u4f24\u5bb3','damage');}
+else if(c.d>0){s.p.df+=c.d;lg('\ud83d\udd35 '+c.name+' +'+c.d+' \u62a4\u76fe','defense');}
+if(s.a.hp<=0){eB(1);return;}
+uB();}
+
+function eT(){
+const s=bt;if(s.end||s.pp)return;
+s.pp=1;s.p.df=0;s.a.df=0;
+document.getElementById('end-turn-btn').disabled=1;
+document.getElementById('battle-status').textContent='AI \u56de\u5408...';
+setTimeout(aT,600);}
+
+function aT(){
+const s=bt;if(s.end)return;
+dw('a');s.a.me=Math.min(s.a.me+1,10);s.a.en=s.a.me;
+const sd=[...s.a.hd].sort((a,b)=>b.p-a.p);
+let pl=0;
+for(const c of sd){
+if(c.cost<=s.a.en){
+const i=s.a.hd.indexOf(c);s.a.en-=c.cost;s.a.hd.splice(i,1);pl=1;
+const d=c.p;
+if(d>0){const ad=Math.max(0,d-s.p.df);s.p.df=Math.max(0,s.p.df-d);s.p.hp-=ad;lg('\ud83d\udd34 AI '+c.name+' \u9020\u6210 '+ad+' \u70b9\u4f24\u5bb3','damage');}
+else if(c.d>0){s.a.df+=c.d;lg('\ud83d\udd35 AI '+c.name+' +'+c.d+' \u62a4\u76fe','defense');}
+if(s.p.hp<=0){eB(0);return;}
+break;}}
+if(!pl)lg('\u002f\u002f AI \u8df3\u8fc7\u51fa\u724c');
+s.n++;s.pp=0;s.p.df=0;s.a.df=0;
+dw('p');s.p.me=Math.min(s.p.me+1,10);s.p.en=s.p.me;
+uB();lg('\u002f\u002f \u7b2c '+s.n+' \u56de\u5408 \u2014 \u4f60\u7684\u884c\u52a8');}
+
+function eB(w){bt.end=1;if(w){document.getElementById('victory-modal').style.display='flex';lg('\u002f\u002f \u5165\u4fb5\u6210\u529f!','special');}else{document.getElementById('defeat-modal').style.display='flex';lg('\u002f\u002f \u8fde\u63a5\u65ad\u5f00...','damage');}}
+
+function resetBattle(){
+document.getElementById('victory-modal').style.display='none';
+document.getElementById('defeat-modal').style.display='none';
+bt=null;
+document.getElementById('battle-field').style.display='none';
+document.getElementById('battle-start-screen').style.display='flex';
+document.getElementById('battle-log').innerHTML='<div class="log-entry">\u002f\u002f \u6218\u6597\u65e5\u5fd7\u521d\u59cb\u5316...</div>';
+uH();}
+
+document.getElementById('battle-start-btn').addEventListener('click',sB);
+document.getElementById('end-turn-btn').addEventListener('click',eT);
+document.getElementById('restart-btn').addEventListener('click',resetBattle);
+rC('all');rP();rL();uH();
+setInterval(function(){
+const b=document.getElementById('battle-start-btn');
+b.disabled=dk.length<5;
+if(dk.length<5){b.innerHTML='\u9700\u8981 '+(5-dk.length)+' \u5f20\u5361 (\u5f53\u524d '+dk.length+')';}
+else{b.innerHTML='\u5f00\u59cb\u5bf9\u6218<span style="display:block;font-size:.6rem;opacity:.7;margin-top:4px">\u5bf9\u624b: AI \u00b7 \u81ea\u52a8\u5339\u914d \u00b7 \u56de\u5408\u5236</span>';}
+},500);
+</script>
+</body>
+</html>
