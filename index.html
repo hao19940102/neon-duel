@@ -70,7 +70,25 @@ body{font-family:Inter,sans-serif;background:var(--bg-void);color:var(--text);mi
 .filter-btn.active{background:var(--purple);border-color:var(--purple);color:#fff}
 @media(max-width:768px){.header{padding:0 12px;height:56px}.header-logo{font-size:1.1rem}.header-logo::after{display:none}.nav-btn{padding:6px 10px;font-size:.78rem}.view{padding:12px}.card-grid{gap:12px}:root{--card-w:140px}.battle-hand .card{width:110px}.battle-hud-hp{font-size:1.2rem}}
 @media(max-width:480px){.card-grid{grid-template-columns:repeat(2,1fr)}.battle-hand .card{width:90px}}
-@media(prefers-reduced-motion:reduce){.card::before{display:none}.card:hover{transform:none}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}</style>
+@media(prefers-reduced-motion:reduce){.card::before{display:none}.card:hover{transform:none}*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.card-enter{animation:cardIn .45s ease forwards;opacity:0}
+@keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.88);filter:blur(4px)}to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}}
+.card-exit{animation:cardOut .35s ease forwards;pointer-events:none}
+@keyframes cardOut{from{opacity:1;transform:translateY(0) scale(1)}to{opacity:0;transform:translateY(-20px) scale(.9)}}
+.card-holo{position:absolute;inset:0;background:linear-gradient(135deg,transparent 25%,rgba(255,255,255,.06) 35%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.06) 65%,transparent 75%);background-size:250% 250%;opacity:0;transition:opacity .3s;pointer-events:none;z-index:3;mix-blend-mode:overlay}
+.card:hover .card-holo{opacity:1;animation:holoShimmer 2s ease-in-out infinite}
+@keyframes holoShimmer{0%{background-position:250% 0%}100%{background-position:-250% 0%}}
+.card-rarity{position:absolute;bottom:5px;right:7px;font-size:.45rem;letter-spacing:2px;color:var(--rarity-color);text-shadow:0 0 6px var(--rarity-color);z-index:5;font-family:JetBrains Mono,monospace}
+.card-border-glow{position:absolute;inset:-2px;border-radius:12px;background:linear-gradient(135deg,transparent 40%,var(--rarity-color) 50%,transparent 60%);opacity:0;transition:opacity .3s;z-index:-2;filter:blur(2px);background-size:200% 200%}
+.card:hover .card-border-glow{opacity:.6;animation:borderShimmer 2s ease-in-out infinite}
+@keyframes borderShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.card-divider{height:1px;background:linear-gradient(90deg,transparent 0%,var(--rarity-color) 50%,transparent 100%);opacity:.3;margin:4px 0 6px}
+.card.dragging{opacity:.4;transform:scale(.92);cursor:grabbing}
+.card.drag-target{border-color:var(--cyan)!important;box-shadow:var(--glow-cyan)!important;transform:translateY(-4px) scale(1.02)}
+.card .card-body{padding:8px 10px 10px}
+.card .card-name{font-size:.72rem;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center}
+.card .card-name .cost-badge{font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--rarity-color);border:1px solid var(--rarity-color);border-radius:4px;padding:1px 5px;background:rgba(0,0,0,.4)}
+.card .card-desc{font-size:.55rem;color:var(--text-dim);line-height:1.3;margin:3px 0;max-height:2.4em;overflow:hidden}</style>
 </head>
 <body>
 <header class="header">
@@ -141,22 +159,22 @@ body{font-family:Inter,sans-serif;background:var(--bg-void);color:var(--text);mi
 <p style="color:var(--text-dim);margin-bottom:24px">你的系统已被反制。重新配置后重试。</p>
 <button onclick="resetBattle()" style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.8rem;padding:12px 32px;border:1px solid var(--pink);border-radius:6px;cursor:pointer;background:transparent;color:var(--pink)">重新连接</button></div></div><script>
 const C=[
-{id:1,name:'ICE WALL',type:'ICE',rarity:'Common',cost:2,p:0,d:4,icon:'\u258c'},
-{id:2,name:'DATA LEECH',type:'Daemon',rarity:'Common',cost:1,p:2,d:0,icon:'\u224b'},
-{id:3,name:'CYBER CLAW',type:'Cyberware',rarity:'Common',cost:2,p:3,d:0,icon:'\u2694'},
-{id:4,name:'SPINE COOLER',type:'Cyberware',rarity:'Common',cost:1,p:0,d:2,icon:'\u2744'},
-{id:5,name:'CODE WORM',type:'Daemon',rarity:'Common',cost:2,p:3,d:0,icon:'\u2248'},
-{id:6,name:'FRAG GRENADE',type:'Hardware',rarity:'Common',cost:2,p:4,d:0,icon:'💥'},
-{id:7,name:'BEACON JAMMER',type:'Hardware',rarity:'Common',cost:1,p:1,d:1,icon:'\u2573'},
-{id:8,name:'SMOKE PROXY',type:'Daemon',rarity:'Common',cost:1,p:0,d:3,icon:'\u25ce'},
-{id:9,name:'NEURAL OVERRIDE',type:'Hack',rarity:'Rare',cost:3,p:5,d:0,icon:'\u25c8'},
-{id:10,name:'BLACK ICE',type:'ICE',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c6'},
-{id:11,name:'EMP BURST',type:'Hardware',rarity:'Rare',cost:3,p:4,d:0,icon:'\u26a1'},
-{id:12,name:'VIRAL CASCADE',type:'Daemon',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c9'},
-{id:13,name:'GHOST PROTOCOL',type:'Hack',rarity:'Epic',cost:5,p:0,d:0,icon:'\u25d0'},
-{id:14,name:'QUANTUM ENGINE',type:'Hardware',rarity:'Epic',cost:6,p:8,d:0,icon:'\u25c8'},
-{id:15,name:'SHADOW ICE',type:'ICE',rarity:'Epic',cost:5,p:0,d:8,icon:'\u25c8'},
-{id:16,name:'PHOENIX PROTOCOL',type:'Hack',rarity:'Legendary',cost:7,p:10,d:0,icon:'\u25c6'}];
+{id:1,name:'ICE WALL',type:'ICE',rarity:'Common',cost:2,p:0,d:4,icon:'\u258c',desc:'部署一道标准防火墙。'},
+{id:2,name:'DATA LEECH',type:'Daemon',rarity:'Common',cost:1,p:2,d:0,icon:'\u224b',desc:'从对手系统盗取数据。'},
+{id:3,name:'CYBER CLAW',type:'Cyberware',rarity:'Common',cost:2,p:3,d:0,icon:'\u2694',desc:'手臂集成破解用爪刃。'},
+{id:4,name:'SPINE COOLER',type:'Cyberware',rarity:'Common',cost:1,p:0,d:2,icon:'\u2744',desc:'散热植入体，降低系统过载。'},
+{id:5,name:'CODE WORM',type:'Daemon',rarity:'Common',cost:2,p:3,d:0,icon:'\u2248',desc:'腐蚀敵方数据结构。'},
+{id:6,name:'FRAG GRENADE',type:'Hardware',rarity:'Common',cost:2,p:4,d:0,icon:'💥',desc:'区域性压制爆炸物。'},
+{id:7,name:'BEACON JAMMER',type:'Hardware',rarity:'Common',cost:1,p:1,d:1,icon:'\u2573',desc:'扰乱敵方通信信标。'},
+{id:8,name:'SMOKE PROXY',type:'Daemon',rarity:'Common',cost:1,p:0,d:3,icon:'\u25ce',desc:'代理数据包混淆追踪。'},
+{id:9,name:'NEURAL OVERRIDE',type:'Hack',rarity:'Rare',cost:3,p:5,d:0,icon:'\u25c8',desc:'夺取敵方一道ICE的控制权。'},
+{id:10,name:'BLACK ICE',type:'ICE',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c6',desc:'致命反击程序，造成大量伤害。'},
+{id:11,name:'EMP BURST',type:'Hardware',rarity:'Rare',cost:3,p:4,d:0,icon:'\u26a1',desc:'瘱痪敵方全体义体两回合。'},
+{id:12,name:'VIRAL CASCADE',type:'Daemon',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c9',desc:'链式数据破坏，传染相邻节点。'},
+{id:13,name:'GHOST PROTOCOL',type:'Hack',rarity:'Epic',cost:5,p:0,d:0,icon:'\u25d0',desc:'进入隐身，下一张卡伤害翻倍。'},
+{id:14,name:'QUANTUM ENGINE',type:'Hardware',rarity:'Epic',cost:6,p:8,d:0,icon:'\u25c8',desc:'原型量子处理器，威力惊人。'},
+{id:15,name:'SHADOW ICE',type:'ICE',rarity:'Epic',cost:5,p:0,d:8,icon:'\u25c8',desc:'自适应伪装防火墙，极难穿透。'},
+{id:16,name:'PHOENIX PROTOCOL',type:'Hack',rarity:'Legendary',cost:7,p:10,d:0,icon:'\u25c6',desc:'从备份中重生，毁灭性反击。'}];
 const CC={Common:'#00f0ff',Rare:'#ff0080',Epic:'#7b2ff7',Legendary:'#ffd700'};
 const MX=10,HP=30;
 let dk=[],bt=null;
@@ -240,7 +258,7 @@ document.getElementById('view-'+this.dataset.view).classList.add('active');});})
 document.getElementById('filters').addEventListener('click',function(e){
 if(!e.target.classList.contains('filter-btn'))return;
 document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-e.target.classList.add('active');rC(e.target.dataset.filter);});
+e.target.classList.add('active');rCAnim(e.target.dataset.filter);});
 
 function sh(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
@@ -342,13 +360,84 @@ uH();}
 document.getElementById('battle-start-btn').addEventListener('click',sB);
 document.getElementById('end-turn-btn').addEventListener('click',eT);
 document.getElementById('restart-btn').addEventListener('click',resetBattle);
-rC('all');rP();rL();uH();
+rCAnim('all');rP();rL();uH();
 setInterval(function(){
 const b=document.getElementById('battle-start-btn');
 b.disabled=dk.length<5;
 if(dk.length<5){b.innerHTML='\u9700\u8981 '+(5-dk.length)+' \u5f20\u5361 (\u5f53\u524d '+dk.length+')';}
 else{b.innerHTML='\u5f00\u59cb\u5bf9\u6218<span style="display:block;font-size:.6rem;opacity:.7;margin-top:4px">\u5bf9\u624b: AI \u00b7 \u81ea\u52a8\u5339\u914d \u00b7 \u56de\u5408\u5236</span>';}
 },500);
+
+// ===== ENHANCED RENDER WITH ANIMATION =====
+function rCAnim(f){
+  const g=document.getElementById('collection-grid');
+  const fl=f==='all'?C:C.filter(x=>x.type===f);
+  const ex=g.querySelectorAll('.card');
+  if(ex.length>0){
+    ex.forEach(c=>c.classList.add('card-exit'));
+    setTimeout(()=>{renderGrid(g,fl);},320);
+  }else{renderGrid(g,fl);}
+}
+function renderGrid(g,fl){
+  const st={Common:'★',Rare:'★★',Epic:'★★★',Legendary:'★★★★'};
+  g.innerHTML=fl.map((x,i)=>'<div class="card card-enter" data-id="'+x.id+'" data-rarity="'+x.rarity+'" style="animation-delay:'+(i*45)+'ms">'+
+    '<span class="card-badge">'+x.rarity.toUpperCase()+'</span>'+
+    '<div class="card-art"><div class="card-art-grid"></div><div class="card-holo"></div>'+
+    '<div class="card-art-icon" style="color:'+CC[x.rarity]+'">'+x.icon+'</div></div>'+
+    '<div class="card-border-glow"></div>'+
+    '<div class="card-body"><div class="card-name">'+x.name+' <span class="cost-badge">⚡'+x.cost+'</span></div>'+
+    '<div class="card-type">'+x.type+'</div><div class="card-divider"></div>'+
+    '<div class="card-stats">'+
+    (x.p>0?'<span class="card-stat"><span class="label">ATK</span> <span class="value pink">'+x.p+'</span></span>':'')+
+    (x.d>0?'<span class="card-stat"><span class="label">DEF</span> <span class="value cyan">'+x.d+'</span></span>':'')+
+    (x.p===0&&x.d===0?'<span class="card-stat"><span class="label" style="color:var(--purple)">SPL</span></span>':'')+
+    '</div><div class="card-desc">'+x.desc+'</div>'+
+    '<div class="card-rarity">'+st[x.rarity]+'</div></div></div>').join('');
+  g.querySelectorAll('.card').forEach(e=>{sFX(e);dDrag(e);});
+}
+// ===== DRAG AND DROP =====
+let dId=null,dSrc=null;
+function dDrag(el){
+  el.draggable=true;
+  el.addEventListener('dragstart',function(e){
+    dId=parseInt(this.dataset.id);dSrc='coll';
+    this.classList.add('dragging');
+    const gh=this.cloneNode(true);gh.className='card';gh.style.cssText='position:fixed;pointer-events:none;z-index:9999;width:140px;opacity:.85;transform:rotate(-2deg);box-shadow:0 0 30px rgba(0,240,255,.5)';
+    document.body.appendChild(gh);e.dataTransfer.setDragImage(gh,70,140);
+    setTimeout(()=>gh.remove(),0);
+  });
+  el.addEventListener('dragend',function(){this.classList.remove('dragging');document.querySelectorAll('.card.drag-target').forEach(c=>c.classList.remove('drag-target'));});
+  el.addEventListener('dragover',function(e){e.preventDefault();if(parseInt(this.dataset.id)!==dId)this.classList.add('drag-target');});
+  el.addEventListener('dragleave',function(){this.classList.remove('drag-target');});
+  el.addEventListener('drop',function(e){
+    e.preventDefault();this.classList.remove('drag-target');
+    const p=this.parentElement;
+    const cards=[...p.querySelectorAll('.card[data-id]')];
+    const fi=cards.findIndex(c=>parseInt(c.dataset.id)===dId);
+    const ti=cards.findIndex(c=>parseInt(c.dataset.id)===parseInt(this.dataset.id));
+    if(fi===-1||ti===-1)return;
+    const f=document.querySelector('.filter-btn.active')?.dataset?.filter||'all';
+    const vc=f==='all'?C:C.filter(x=>x.type===f);
+    const fv=vc.findIndex(x=>x.id===dId);
+    const tv=vc.findIndex(x=>x.id===parseInt(this.dataset.id));
+    if(fv===-1||tv===-1)return;
+    const[m]=vc.splice(fv,1);vc.splice(tv,0,m);
+    const rm=C.filter(x=>!vc.includes(x));
+    const nw=[...vc,...rm];
+    C.length=0;C.push(...nw);
+    rCAnim(f);
+  });
+}
+// Override filter
+document.getElementById('filters').addEventListener('click',function(e){
+  if(!e.target.classList.contains('filter-btn'))return;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');rCAnim(e.target.dataset.filter);
+});
+// Drag hint
+(function(){const h=document.createElement('div');h.style.cssText='text-align:center;font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:2px 0 8px;opacity:.6';
+h.textContent='// 拖拽卡牌可重新排序';
+document.querySelector('#view-collection .collection-header').after(h);})();
 </script>
 </body>
 </html>
