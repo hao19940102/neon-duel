@@ -88,7 +88,48 @@ body{font-family:Inter,sans-serif;background:var(--bg-void);color:var(--text);mi
 .card .card-body{padding:8px 10px 10px}
 .card .card-name{font-size:.72rem;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:center}
 .card .card-name .cost-badge{font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--rarity-color);border:1px solid var(--rarity-color);border-radius:4px;padding:1px 5px;background:rgba(0,0,0,.4)}
-.card .card-desc{font-size:.55rem;color:var(--text-dim);line-height:1.3;margin:3px 0;max-height:2.4em;overflow:hidden}</style>
+.card .card-desc{font-size:.55rem;color:var(--text-dim);line-height:1.3;margin:3px 0;max-height:2.4em;overflow:hidden}
+/* === HEARTHSTONE-STYLE BATTLE === */
+.battle-board{display:flex;flex-direction:column;gap:2px;flex:1;align-items:center}
+.battle-board .zone{width:100%;padding:4px 8px;border:1px solid rgba(255,255,255,.04);border-radius:8px;background:rgba(255,255,255,.015);position:relative;min-height:100px}
+.battle-board .zone-label{position:absolute;top:-9px;left:12px;font-family:Orbitron,sans-serif;font-size:.55rem;color:var(--text-dim);background:var(--bg-void);padding:0 6px;letter-spacing:1px;text-transform:uppercase}
+.minion-row{display:flex;gap:8px;justify-content:center;min-height:95px;align-items:center;flex-wrap:wrap}
+.minion-card{position:relative;width:90px;height:90px;background:var(--bg-card);border:2px solid var(--rarity-color,var(--cyan));border-radius:6px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.minion-card .mc-name{font-family:Orbitron,sans-serif;font-size:.45rem;color:#e0e8f0;text-align:center;max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.minion-card .mc-icon{font-size:1.2rem;opacity:.5;margin:2px 0}
+.minion-card .mc-stats{display:flex;justify-content:space-between;width:100%;padding:0 6px;position:absolute;bottom:4px}
+.minion-card .mc-atk{font-family:JetBrains Mono,monospace;font-size:.7rem;font-weight:700;color:var(--pink)}
+.minion-card .mc-hp{font-family:JetBrains Mono,monospace;font-size:.7rem;font-weight:700;color:var(--cyan)}
+.minion-card.highlight-attacker{transform:scale(1.08);box-shadow:0 0 15px var(--pink);border-color:var(--pink);z-index:5}
+.minion-card.highlight-target{transform:scale(1.05);box-shadow:0 0 15px var(--cyan);border-color:var(--cyan);cursor:crosshair;z-index:5}
+.minion-card .mc-dmg{position:absolute;font-family:JetBrains Mono,monospace;font-size:1rem;font-weight:700;color:var(--pink);text-shadow:0 0 10px var(--pink);pointer-events:none;animation:dmgFloat .8s ease-out forwards;z-index:10}
+@keyframes dmgFloat{0%{opacity:1;transform:translateY(0) scale(1.2)}100%{opacity:0;transform:translateY(-30px) scale(.8)}}
+.minion-card.dying{animation:dieAnim .4s ease forwards;pointer-events:none}
+@keyframes dieAnim{0%{opacity:1;transform:scale(1)}50%{transform:scale(1.2);opacity:.5}100%{opacity:0;transform:scale(0)}}
+.minion-card.attacking{animation:atkAnim .35s ease}
+@keyframes atkAnim{0%{transform:translateX(0)}30%{transform:translateX(30px) scale(1.1)}100%{transform:translateX(0)}}
+.minion-card.enemy-attacking{animation:eAtkAnim .35s ease}
+@keyframes eAtkAnim{0%{transform:translateX(0)}30%{transform:translateX(-30px) scale(1.1)}100%{transform:translateX(0)}}
+.hand-row{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:4px 0;min-height:50px}
+.hand-row .mini-card{width:70px;height:80px;background:var(--bg-card);border:1px solid var(--rarity-color,var(--cyan));border-radius:5px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:2px}
+.hand-row .mini-card:hover{transform:translateY(-6px);box-shadow:0 0 12px var(--rarity-color,var(--cyan))}
+.hand-row .mini-card .mc-name{font-family:Orbitron,sans-serif;font-size:.38rem;color:#e0e8f0;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:95%}
+.hand-row .mini-card .mc-cost{position:absolute;top:-3px;right:-3px;width:16px;height:16px;border-radius:50%;background:var(--cyan);color:#000;font-family:JetBrains Mono,monospace;font-size:.5rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.hand-row .mini-card .mc-stats{display:flex;gap:6px;margin-top:2px}
+.hand-row .mini-card .mc-atk{font-family:JetBrains Mono,monospace;font-size:.55rem;font-weight:700;color:var(--pink);background:rgba(255,0,128,.15);padding:0 4px;border-radius:3px}
+.hand-row .mini-card .mc-hp{font-family:JetBrains Mono,monospace;font-size:.55rem;font-weight:700;color:var(--cyan);background:rgba(0,240,255,.15);padding:0 4px;border-radius:3px}
+.card-placeholder{width:70px;min-width:70px;height:90px;border:1px dashed var(--navy);border-radius:5px}
+.hp-float{position:fixed;font-family:JetBrains Mono,monospace;font-size:1.8rem;font-weight:900;pointer-events:none;z-index:100;animation:hpFloat 1s ease-out forwards}
+@keyframes hpFloat{0%{opacity:1;transform:scale(1.5) translateY(0)}100%{opacity:0;transform:scale(1) translateY(-40px)}}
+.hero-avatar{width:60px;height:60px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-family:Orbitron,sans-serif;font-size:.7rem;font-weight:900;background:rgba(0,0,0,.5);backdrop-filter:blur(4px)}
+.hero-avatar.cyan{border-color:var(--cyan);color:var(--cyan)}
+.hero-avatar.pink{border-color:var(--pink);color:var(--pink)}
+.mana-crystal{width:18px;height:18px;border-radius:50%;display:inline-block;margin:0 1px;border:1px solid var(--cyan)}
+.mana-crystal.full{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.mana-crystal.empty{background:transparent}
+.target-hint{font-family:JetBrains Mono,monospace;font-size:.65rem;color:var(--pink);animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.5}}
+</style>
 </head>
 <body>
 <header class="header">
@@ -119,36 +160,51 @@ body{font-family:Inter,sans-serif;background:var(--bg-void);color:var(--text);mi
 <div class="card-grid" id="db-pool-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px"></div></div>
 <div><h3 style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.9rem;color:var(--cyan);margin-bottom:16px">// 当前牌组 <span id="deck-count" style="color:var(--pink);font-weight:400;font-size:.75rem">0/10</span></h3>
 <div id="deck-list"><div class="db-empty" style="text-align:center;padding:40px 20px;color:var(--text-dim);font-size:.85rem;border:1px dashed var(--navy);border-radius:8px">点击左侧卡牌组建你的牌组<br>上限10张</div></div></div></div></section>
-<section class="view" id="view-battle">
-<div style="display:flex;flex-direction:column;min-height:calc(100vh - 140px)">
-<div id="battle-start-screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:20px">
+<section class="view" <section class="view" id="view-battle">
+<div id="battle-start-screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:20px;min-height:calc(100vh - 140px)">
 <h2 style="font-family:Orbitron,sans-serif;font-weight:700;font-size:1.4rem;color:var(--text-dim)">// 准备接入</h2>
-<p style="color:var(--text-dim);max-width:400px;text-align:center">需要至少5张卡牌才能开始对战。在「组卡器」中选好卡牌后回到这里。</p>
-<button class="battle-start-btn" id="battle-start-btn">开始对战<span style="display:block;font-size:.6rem;opacity:.7;margin-top:4px;font-weight:400;letter-spacing:0;text-transform:none">对手: AI · 自动匹配 · 回合制</span></button></div>
-<div class="battle-field" id="battle-field" style="display:none;flex-direction:column;gap:12px;padding:16px 0">
-<div class="battle-hud">
-<div style="display:flex;flex-direction:column;gap:4px">
-<span style="font-family:Orbitron,sans-serif;font-size:.65rem;color:var(--text-dim);letter-spacing:1px">// 玩家</span>
-<span class="battle-hud-hp" style="color:var(--cyan)" id="player-hp">30</span>
-<span style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--cyan)">⚡ <span id="player-energy">0</span>/<span id="player-max-energy">0</span></span>
-<div style="width:100%;height:4px;background:var(--navy);border-radius:2px;overflow:hidden"><div id="player-hp-bar" style="height:100%;background:var(--cyan);border-radius:2px;transition:width .5s ease;width:100%"></div></div></div>
+<p style="color:var(--text-dim);max-width:400px;text-align:center;font-size:.85rem">需要至少5张卡牌才能开始对战。在「组卡器」中选好卡牌后回到这里。</p>
+<button class="battle-start-btn" id="battle-start-btn" style="font-family:Orbitron,sans-serif;font-weight:700;font-size:.9rem;padding:14px 40px;border:none;border-radius:8px;background:linear-gradient(135deg,var(--cyan),var(--pink));color:#000;cursor:pointer;text-transform:uppercase;letter-spacing:2px">开始对战<span style="display:block;font-size:.6rem;opacity:.7;margin-top:4px;font-weight:400;letter-spacing:0;text-transform:none">对手: AI · 炉石风格 · 回合制</span></button></div>
+<div class="battle-field" id="battle-field" style="display:none;flex:1;flex-direction:column;gap:4px;padding:8px 8px 12px">
+
+<!-- HUD -->
+<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:rgba(0,0,0,.3);border:1px solid rgba(0,240,255,.1);border-radius:8px;margin-bottom:4px">
+<div style="display:flex;align-items:center;gap:6px">
+<div class="hero-avatar cyan" id="p-avatar">☆</div>
+<div><div id="p-hp" style="font-family:JetBrains Mono,monospace;font-size:1.2rem;font-weight:700;color:var(--cyan)">30</div>
+<div id="p-mana" style="font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--cyan)" class="mana-row"></div></div></div>
 <div style="text-align:center">
-<div id="battle-turn" style="font-family:Orbitron,sans-serif;font-size:.7rem;color:var(--text-dim)">回合 1</div>
-<div id="battle-status" style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--text);margin-top:4px;min-height:1.2em">选择一张卡牌打出</div></div>
-<div style="text-align:right;display:flex;flex-direction:column;gap:4px">
-<span style="font-family:Orbitron,sans-serif;font-size:.65rem;color:var(--text-dim);letter-spacing:1px">// AI</span>
-<span class="battle-hud-hp" style="color:var(--pink)" id="ai-hp">30</span>
-<span style="font-family:JetBrains Mono,monospace;font-size:.75rem;color:var(--pink)">⚡ <span id="ai-energy">0</span></span>
-<div style="width:100%;height:4px;background:var(--navy);border-radius:2px;overflow:hidden"><div id="ai-hp-bar" style="height:100%;background:var(--pink);border-radius:2px;transition:width .5s ease;width:100%"></div></div></div></div>
-<div class="battle-zone"><span class="battle-zone-label">// 对手场域</span>
-<div class="battle-hand" id="ai-hand"></div></div>
-<div class="battle-zone"><span class="battle-zone-label">// 你的手牌</span>
-<div class="battle-hand" id="player-hand"></div></div>
-<div style="display:flex;gap:10px;justify-content:center;padding:12px 0">
-<button class="battle-btn" id="end-turn-btn" style="background:var(--cyan);color:#000;font-family:Orbitron,sans-serif;font-weight:600;font-size:.75rem;padding:10px 24px;border:none;border-radius:6px;cursor:pointer;letter-spacing:1px">结束回合</button>
-<button class="battle-btn" id="restart-btn" style="background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);font-family:Orbitron,sans-serif;font-weight:600;font-size:.75rem;padding:10px 24px;border-radius:6px;cursor:pointer;letter-spacing:1px">重新开局</button></div>
-<div class="battle-log" id="battle-log"><div class="log-entry">// 战斗日志初始化...</div></div></div></div></section>
-<div id="victory-modal" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+<div id="battle-turn" style="font-family:Orbitron,sans-serif;font-size:.65rem;color:var(--text-dim)">回合 1</div>
+<div id="battle-status" style="font-family:JetBrains Mono,monospace;font-size:.65rem;color:var(--text);margin-top:2px;min-height:1em">你的回合 — 出牌或攻击</div></div>
+<div style="text-align:right;display:flex;align-items:center;gap:6px">
+<div><div id="a-hp" style="font-family:JetBrains Mono,monospace;font-size:1.2rem;font-weight:700;color:var(--pink)">30</div>
+<div id="a-mana" style="font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--pink)" class="mana-row"></div></div>
+<div class="hero-avatar pink" id="a-avatar">★</div></div></div>
+
+<!-- Battle Board -->
+<div class="battle-board">
+<!-- Opponent Hand -->
+<div class="zone" style="min-height:56px"><span class="zone-label">// 对手手牌</span>
+<div class="hand-row" id="a-hand"></div></div>
+<!-- Opponent Minions -->
+<div class="zone" style="min-height:105px"><span class="zone-label">// 对手随从</span>
+<div class="minion-row" id="a-board"></div></div>
+<!-- Divider -->
+<div style="height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.2;margin:2px 0"></div>
+<!-- Player Minions -->
+<div class="zone" style="min-height:105px"><span class="zone-label">// 你的随从</span>
+<div class="minion-row" id="p-board"></div></div>
+<!-- Player Hand -->
+<div class="zone" style="min-height:90px"><span class="zone-label">// 你的手牌</span>
+<div class="hand-row" id="p-hand"></div></div></div>
+
+<!-- Actions -->
+<div style="display:flex;gap:6px;justify-content:center;padding:6px 0">
+<div id="target-hint" class="target-hint" style="display:none;font-family:JetBrains Mono,monospace;font-size:.7rem;color:var(--pink);animation:pulse 1s infinite">▶ 选择攻击目标 (敌方随从或英雄)</div>
+<button id="end-turn-btn" style="background:var(--cyan);color:#000;font-family:Orbitron,sans-serif;font-weight:600;font-size:.7rem;padding:8px 20px;border:none;border-radius:6px;cursor:pointer;letter-spacing:1px">结束回合</button>
+<button id="restart-btn" style="background:transparent;border:1px solid var(--text-dim);color:var(--text-dim);font-family:Orbitron,sans-serif;font-weight:600;font-size:.7rem;padding:8px 20px;border-radius:6px;cursor:pointer;letter-spacing:1px">弃权重开</button></div>
+
+<div class="battle-log" id="battle-log" style="max-height:70px;overflow-y:auto;font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:4px 8px;background:rgba(0,0,0,.2);border:1px solid rgba(255,255,255,.04);border-radius:6px"><div class="log-entry">// 战斗日志初始化...</div></div></div></section><div id="victory-modal" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
 <div style="background:var(--bg-panel);border:1px solid var(--cyan);border-radius:16px;padding:40px 48px;text-align:center">
 <h2 style="font-family:Orbitron,sans-serif;font-weight:900;font-size:1.6rem;color:var(--cyan);margin-bottom:8px">// 入侵成功</h2>
 <p style="color:var(--text-dim);margin-bottom:24px">敌方系统已被攻破。数据已提取。</p>
@@ -159,22 +215,22 @@ body{font-family:Inter,sans-serif;background:var(--bg-void);color:var(--text);mi
 <p style="color:var(--text-dim);margin-bottom:24px">你的系统已被反制。重新配置后重试。</p>
 <button onclick="resetBattle()" style="font-family:Orbitron,sans-serif;font-weight:600;font-size:.8rem;padding:12px 32px;border:1px solid var(--pink);border-radius:6px;cursor:pointer;background:transparent;color:var(--pink)">重新连接</button></div></div><script>
 const C=[
-{id:1,name:'ICE WALL',type:'ICE',rarity:'Common',cost:2,p:0,d:4,icon:'\u258c',desc:'部署一道标准防火墙。'},
-{id:2,name:'DATA LEECH',type:'Daemon',rarity:'Common',cost:1,p:2,d:0,icon:'\u224b',desc:'从对手系统盗取数据。'},
-{id:3,name:'CYBER CLAW',type:'Cyberware',rarity:'Common',cost:2,p:3,d:0,icon:'\u2694',desc:'手臂集成破解用爪刃。'},
-{id:4,name:'SPINE COOLER',type:'Cyberware',rarity:'Common',cost:1,p:0,d:2,icon:'\u2744',desc:'散热植入体，降低系统过载。'},
-{id:5,name:'CODE WORM',type:'Daemon',rarity:'Common',cost:2,p:3,d:0,icon:'\u2248',desc:'腐蚀敵方数据结构。'},
-{id:6,name:'FRAG GRENADE',type:'Hardware',rarity:'Common',cost:2,p:4,d:0,icon:'💥',desc:'区域性压制爆炸物。'},
-{id:7,name:'BEACON JAMMER',type:'Hardware',rarity:'Common',cost:1,p:1,d:1,icon:'\u2573',desc:'扰乱敵方通信信标。'},
-{id:8,name:'SMOKE PROXY',type:'Daemon',rarity:'Common',cost:1,p:0,d:3,icon:'\u25ce',desc:'代理数据包混淆追踪。'},
-{id:9,name:'NEURAL OVERRIDE',type:'Hack',rarity:'Rare',cost:3,p:5,d:0,icon:'\u25c8',desc:'夺取敵方一道ICE的控制权。'},
-{id:10,name:'BLACK ICE',type:'ICE',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c6',desc:'致命反击程序，造成大量伤害。'},
-{id:11,name:'EMP BURST',type:'Hardware',rarity:'Rare',cost:3,p:4,d:0,icon:'\u26a1',desc:'瘱痪敵方全体义体两回合。'},
-{id:12,name:'VIRAL CASCADE',type:'Daemon',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c9',desc:'链式数据破坏，传染相邻节点。'},
-{id:13,name:'GHOST PROTOCOL',type:'Hack',rarity:'Epic',cost:5,p:0,d:0,icon:'\u25d0',desc:'进入隐身，下一张卡伤害翻倍。'},
-{id:14,name:'QUANTUM ENGINE',type:'Hardware',rarity:'Epic',cost:6,p:8,d:0,icon:'\u25c8',desc:'原型量子处理器，威力惊人。'},
-{id:15,name:'SHADOW ICE',type:'ICE',rarity:'Epic',cost:5,p:0,d:8,icon:'\u25c8',desc:'自适应伪装防火墙，极难穿透。'},
-{id:16,name:'PHOENIX PROTOCOL',type:'Hack',rarity:'Legendary',cost:7,p:10,d:0,icon:'\u25c6',desc:'从备份中重生，毁灭性反击。'}];
+{id:1,name:'ICE WALL',type:'ICE',rarity:'Common',cost:2,p:0,d:4,icon:'\u258c',atk:0,hp:1,desc:'部署一道标准防火墙。'},
+{id:2,name:'DATA LEECH',type:'Daemon',rarity:'Common',cost:1,p:2,d:0,icon:'\u224b',atk:2,hp:2,desc:'从对手系统盗取数据。'},
+{id:3,name:'CYBER CLAW',type:'Cyberware',rarity:'Common',cost:2,p:3,d:0,icon:'\u2694',atk:3,hp:3,desc:'手臂集成破解用爪刃。'},
+{id:4,name:'SPINE COOLER',type:'Cyberware',rarity:'Common',cost:1,p:0,d:2,icon:'\u2744',atk:0,hp:4,desc:'散热植入体，降低系统过载。'},
+{id:5,name:'CODE WORM',type:'Daemon',rarity:'Common',cost:2,p:3,d:0,icon:'\u2248',atk:3,hp:5,desc:'腐蚀敵方数据结构。'},
+{id:6,name:'FRAG GRENADE',type:'Hardware',rarity:'Common',cost:2,p:4,d:0,icon:'💥',atk:4,hp:6,desc:'区域性压制爆炸物。'},
+{id:7,name:'BEACON JAMMER',type:'Hardware',rarity:'Common',cost:1,p:1,d:1,icon:'\u2573',atk:1,hp:7,desc:'扰乱敵方通信信标。'},
+{id:8,name:'SMOKE PROXY',type:'Daemon',rarity:'Common',cost:1,p:0,d:3,icon:'\u25ce',atk:0,hp:8,desc:'代理数据包混淆追踪。'},
+{id:9,name:'NEURAL OVERRIDE',type:'Hack',rarity:'Rare',cost:3,p:5,d:0,icon:'\u25c8',atk:5,hp:9,desc:'夺取敵方一道ICE的控制权。'},
+{id:10,name:'BLACK ICE',type:'ICE',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c6',atk:6,hp:10,desc:'致命反击程序，造成大量伤害。'},
+{id:11,name:'EMP BURST',type:'Hardware',rarity:'Rare',cost:3,p:4,d:0,icon:'\u26a1',atk:4,hp:11,desc:'瘱痪敵方全体义体两回合。'},
+{id:12,name:'VIRAL CASCADE',type:'Daemon',rarity:'Rare',cost:4,p:6,d:0,icon:'\u25c9',atk:6,hp:12,desc:'链式数据破坏，传染相邻节点。'},
+{id:13,name:'GHOST PROTOCOL',type:'Hack',rarity:'Epic',cost:5,p:0,d:0,icon:'\u25d0',atk:0,hp:13,desc:'进入隐身，下一张卡伤害翻倍。'},
+{id:14,name:'QUANTUM ENGINE',type:'Hardware',rarity:'Epic',cost:6,p:8,d:0,icon:'\u25c8',atk:8,hp:14,desc:'原型量子处理器，威力惊人。'},
+{id:15,name:'SHADOW ICE',type:'ICE',rarity:'Epic',cost:5,p:0,d:8,icon:'\u25c8',atk:0,hp:15,desc:'自适应伪装防火墙，极难穿透。'},
+{id:16,name:'PHOENIX PROTOCOL',type:'Hack',rarity:'Legendary',cost:7,p:10,d:0,icon:'\u25c6',atk:10,hp:16,desc:'从备份中重生，毁灭性反击。'}];
 const CC={Common:'#00f0ff',Rare:'#ff0080',Epic:'#7b2ff7',Legendary:'#ffd700'};
 const MX=10,HP=30;
 let dk=[],bt=null;
@@ -262,105 +318,226 @@ e.target.classList.add('active');rCAnim(e.target.dataset.filter);});
 
 function sh(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
-function sB(){
-if(dk.length<5){document.getElementById('battle-status').textContent='牌组不足5张';return;}
-const pD=sh([...dk]),aD=sh([...dk]);
-bt={n:1,p:{hp:HP,en:0,me:0,dk:pD,hd:[],df:0},a:{hp:HP,en:0,me:0,dk:aD,hd:[],df:0},end:0,pp:0,gb:0};
-for(let i=0;i<4;i++){dw('p');dw('a');}
-document.getElementById('battle-start-screen').style.display='none';
-document.getElementById('battle-field').style.display='flex';
-uB();lg('\u002f\u002f \u6218\u6597\u5f00\u59cb\u3002\u5148\u624b: \u73a9\u5bb6');}
 
-function dw(s){const st=bt[s];if(st.dk.length===0||st.hd.length>=6)return;st.hd.push(st.dk.pop());}
-function lg(m,cl){const e=document.getElementById('battle-log');e.innerHTML+='<div class="log-entry '+cl+'">'+m+'</div>';e.scrollTop=e.scrollHeight;}
+// ===== HEARTHSTONE-STYLE BATTLE =====
+const MX=10,HP=30,MB=3;
+let bt=null,selAtk=-1;
+
+function manaHTML(n,mx){
+  var h="";
+  for(var i=1;i<=mx;i++){h+='<span class="mana-crystal '+(i<=n?"full":"empty")+'"></span>';}
+  return h;
+}
+
+function sB(){
+  if(dk.length<5){lg("牌组不足5张","");return;}
+  selAtk=-1;
+  const pD=sh([...dk]),aD=sh([...dk]);
+  bt={t:1,p:{hp:HP,en:1,me:1,dk:pD,hd:[],bd:[]},a:{hp:HP,en:0,me:0,dk:aD,hd:[],bd:[]},end:0};
+  for(let i=0;i<3;i++){dw("p");dw("a");}
+  document.getElementById("battle-start-screen").style.display="none";
+  document.getElementById("battle-field").style.display="flex";
+  uB();lg("// 战斗开始! 你的回合","");
+}
+
+function dw(s){
+  const st=bt[s];
+  if(st.dk.length===0||st.hd.length>=6)return;
+  st.hd.push(st.dk.pop());
+}
+
+function lg(m,c){
+  const e=document.getElementById("battle-log");
+  e.innerHTML+='<div class="log-entry '+c+'">'+m+'</div>';
+  e.scrollTop=e.scrollHeight;
+}
 
 function uB(){
-const s=bt;
-document.getElementById('player-hp').textContent=s.p.hp;
-document.getElementById('ai-hp').textContent=Math.max(0,s.a.hp);
-document.getElementById('player-hp-bar').style.width=(s.p.hp/HP*100)+'%';
-document.getElementById('ai-hp-bar').style.width=(s.a.hp/HP*100)+'%';
-document.getElementById('player-energy').textContent=s.p.en;
-document.getElementById('player-max-energy').textContent=s.p.me;
-document.getElementById('ai-energy').textContent=s.a.en;
-document.getElementById('battle-turn').textContent='\u56de\u5408 '+s.n;
-const ph=document.getElementById('player-hand');
-ph.innerHTML=s.p.hd.map((c,i)=>{
-const pl=!s.end&&c.cost<=s.p.en&&!s.pp;
-return '<div class="card '+(pl?'playable':'not-playable')+'" data-idx="'+i+'" data-rarity="'+c.rarity+'">'+
-'<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
-'<div class="card-art"><div class="card-art-grid"></div>'+
-genArt(c,CC[c.rarity])+'</div>'+
-'<div class="card-body"><div class="card-name">'+c.name+'</div>'+
-'<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
-'<div class="card-stats">'+
-(c.p>0?'<span class="card-stat"><span class="label">ATK</span> <span class="value pink">'+c.p+'</span></span>':'')+
-(c.d>0?'<span class="card-stat"><span class="label">DEF</span> <span class="value cyan">'+c.d+'</span></span>':'')+
-(c.p===0&&c.d===0?'<span class="card-stat"><span class="label" style="color:var(--purple)">SPL</span></span>':'')+
-'</div></div></div>';}).join('');
-ph.querySelectorAll('.card.playable').forEach(e=>{e.addEventListener('click',()=>pC(parseInt(e.dataset.idx)));sFX(e);});
-const ah=document.getElementById('ai-hand');
-ah.innerHTML=s.a.hd.map(()=>'<div class="card" style="cursor:default;background:linear-gradient(135deg,#1a1a2e,#0a0a0f);border-color:rgba(255,0,128,.2)">'+
-'<div class="card-art" style="background:radial-gradient(circle,rgba(255,0,128,.05),transparent)">'+
-'<div class="card-art-icon" style="color:rgba(255,0,128,.15);font-size:1.8rem">?</div></div>'+
-'<div class="card-body" style="background:rgba(0,0,0,.6)">'+
-'<div class="card-name" style="color:var(--text-dim)">??</div>'+
-'<div class="card-type" style="color:rgba(90,106,122,.5)">???</div></div></div>').join('');
-document.getElementById('end-turn-btn').disabled=s.end||s.pp;
-document.getElementById('battle-status').textContent=s.gb?'\ud83d\udc7b \u5e7d\u7075\u534f\u8bae\u6fc0\u6d3b \u2014 \u4e0b\u4e00\u5f20\u653b\u51fb\u5361\u4f24\u5bb3\u7ffb\u500d':(s.pp?'\u7b49\u5f85 AI \u56de\u5408...':'\u9009\u62e9\u4e00\u5f20\u5361\u724c\u6253\u51fa');}
+  const s=bt;
+  document.getElementById("p-hp").textContent=s.p.hp;
+  document.getElementById("a-hp").textContent=Math.max(0,s.a.hp);
+  document.getElementById("p-mana").innerHTML=manaHTML(s.p.en,s.p.me);
+  document.getElementById("a-mana").innerHTML=manaHTML(s.a.en,s.a.me);
+  document.getElementById("battle-turn").textContent="\u56de\u5408 "+s.t;
 
-function pC(idx){
-const s=bt;if(s.end||s.pp)return;
-const c=s.p.hd[idx];if(!c||c.cost>s.p.en)return;
-s.p.en-=c.cost;s.p.hd.splice(idx,1);
-let d=c.p;
-if(s.gb&&d>0){d*=2;s.gb=0;lg('\ud83d\udc7b \u5e7d\u7075\u534f\u8bae\u89e6\u53d1! \u4f24\u5bb3\u7ffb\u500d','special');}
-if(c.id===13){s.gb=1;lg('\ud83d\udc7b \u5e7d\u7075\u534f\u8bae\u5df2\u6fc0\u6d3b','special');}
-else if(d>0){const ad=Math.max(0,d-s.a.df);s.a.df=Math.max(0,s.a.df-d);s.a.hp-=ad;lg('\ud83d\udd34 '+c.name+' \u9020\u6210 '+ad+' \u70b9\u4f24\u5bb3','damage');}
-else if(c.d>0){s.p.df+=c.d;lg('\ud83d\udd35 '+c.name+' +'+c.d+' \u62a4\u76fe','defense');}
-if(s.a.hp<=0){eB(1);return;}
-uB();}
+  // Player hand
+  const ph=document.getElementById("p-hand");
+  ph.innerHTML=s.p.hd.map((c,i)=>{
+    var cl=CC[c.rarity];
+    var canPlay=!s.end && c.cost<=s.p.en && s.p.bd.length<MB && c.atk!==undefined;
+    var cls=canPlay?"":";opacity:.5;filter:grayscale(.5);cursor:not-allowed";
+    return '<div class="mini-card '+(canPlay?"playable":"")+'" data-idx="'+i+'" data-side="p" data-type="hand" data-cost="'+c.cost+'" style="--rarity-color:'+cl+cls+'">'+
+      '<span class="mc-cost">'+c.cost+'</span>'+
+      '<span class="mc-name">'+c.name+'</span>'+
+      '<div class="mc-stats"><span class="mc-atk">'+(c.atk||0)+'</span><span class="mc-hp">'+(c.hp||0)+'</span></div></div>';
+  }).join("");
+  ph.querySelectorAll(".mini-card.playable").forEach(el=>{
+    el.addEventListener("click",()=>slm(parseInt(el.dataset.idx)));
+  });
+
+  // Player board
+  const pb=document.getElementById("p-board");
+  pb.innerHTML=s.p.bd.map((c,i)=>{
+    var cl=CC[c.rarity];
+    var canAtk=c.atk>0 && !s.end;
+    return '<div class="minion-card" data-idx="'+i+'" data-side="p" data-type="board" style="--rarity-color:'+cl+'">'+
+      '<span class="mc-icon">'+c.icon+'</span>'+
+      '<span class="mc-name">'+c.name+'</span>'+
+      '<div class="mc-stats"><span class="mc-atk">'+c.atk+'</span><span class="mc-hp">'+c.hp_cur+'/'+c.hp_max+'</span></div></div>';
+  }).join("");
+  for(var i=s.p.bd.length;i<MB;i++){pb.innerHTML+='<div class="card-placeholder"></div>';}
+  pb.querySelectorAll(".minion-card").forEach(el=>{
+    el.addEventListener("click",()=>slAtk(parseInt(el.dataset.idx)));
+  });
+
+  // Opponent board
+  const ab=document.getElementById("a-board");
+  ab.innerHTML=s.a.bd.map((c,i)=>{
+    var cl=CC[c.rarity];
+    return '<div class="minion-card enemy" data-idx="'+i+'" data-side="e" data-type="board" style="--rarity-color:'+cl+'">'+
+      '<span class="mc-icon">'+c.icon+'</span>'+
+      '<span class="mc-name">'+c.name+'</span>'+
+      '<div class="mc-stats"><span class="mc-atk">'+c.atk+'</span><span class="mc-hp">'+c.hp_cur+'/'+c.hp_max+'</span></div></div>';
+  }).join("");
+  for(var i=s.a.bd.length;i<MB;i++){ab.innerHTML+='<div class="card-placeholder"></div>';}
+  ab.querySelectorAll(".minion-card").forEach(el=>{
+    el.addEventListener("click",()=>{if(selAtk>=0)doAtk("board",parseInt(el.dataset.idx));});
+  });
+
+  // Opponent hand (face down)
+  const ah=document.getElementById("a-hand");
+  ah.innerHTML=s.a.hd.map(()=>'<div class="mini-card" style="cursor:default;background:linear-gradient(135deg,#1a1a2e,#0a0a0f);border-color:rgba(255,0,128,.2);opacity:.6">'+
+    '<span class="mc-name" style="color:var(--text-dim)">??</span>'+
+    '<div class="mc-stats"><span class="mc-atk" style="background:rgba(255,0,128,.08)">?<'+'/span><span class="mc-hp" style="background:rgba(0,240,255,.08)">?</span></div></div>').join("");
+
+  // Status
+  var stMsg=bt.end?"":(selAtk>=0?"\u25b6 \u9009\u62e9\u653b\u51fb\u76ee\u6807":"\u4f60\u7684\u56de\u5408 \u2014 \u51fa\u724c\u6216\u653b\u51fb");
+  document.getElementById("battle-status").textContent=stMsg;
+  document.getElementById("target-hint").style.display=selAtk>=0?"block":"none";
+  document.getElementById("end-turn-btn").disabled=bt.end;
+}
+
+function slm(idx){
+  const s=bt;if(s.end)return;
+  const c=s.p.hd[idx];if(!c||c.cost>s.p.en||s.p.bd.length>=MB)return;
+  s.p.en-=c.cost;
+  s.p.hd.splice(idx,1);
+  c.hp_cur=c.hp||1;
+  c.hp_max=c.hp||1;
+  s.p.bd.push(c);
+  lg("\u2728 "+c.name+" \u53ec\u5524\u5951\u7ea6","special");
+  uB();
+}
+
+function slAtk(idx){
+  const s=bt;if(s.end)return;
+  const c=s.p.bd[idx];if(!c||c.atk<=0)return;
+  selAtk=idx;
+  document.querySelectorAll("#p-board .minion-card").forEach((el,i)=>{
+    el.classList.toggle("highlight-attacker",i===idx);
+  });
+  document.querySelectorAll("#a-board .minion-card,#a-avatar").forEach(el=>{
+    el.classList.add("highlight-target");
+  });
+  document.getElementById("target-hint").style.display="block";
+}
+
+function doAtk(tType,tIdx){
+  const s=bt;if(s.end||selAtk<0)return;
+  const atkr=s.p.bd[selAtk];
+  if(!atkr)return;
+  var def;
+  if(tType==="board"&&s.a.bd[tIdx]){
+    def=s.a.bd[tIdx];
+    s.a.bd[tIdx].hp_cur-=atkr.atk;
+    if(atkr.hp_cur>0&&def.atk>0){atkr.hp_cur-=def.atk;}
+    lg("\u2694 "+atkr.name+" \u653b\u51fb "+def.name,"damage");
+    // Show damage numbers
+    showDmg("a-board",tIdx,"-"+atkr.atk);
+    if(def.atk>0)showDmg("p-board",selAtk,"-"+def.atk);
+    // Death check
+    if(s.a.bd[tIdx].hp_cur<=0){s.a.bd.splice(tIdx,1);}
+    if(atkr.hp_cur<=0){s.p.bd.splice(selAtk,1);}
+  }else if(tType==="hero"){
+    s.a.hp-=atkr.atk;
+    lg("\u2694 "+atkr.name+" \u653b\u51fb\u82f1\u96c4!","damage");
+    showDmg("a-avatar",0,"-"+atkr.atk);
+  }
+  selAtk=-1;
+  if(s.a.hp<=0){eB(1);return;}
+  if(s.p.hp<=0){eB(0);return;}
+  uB();
+}
+
+function showDmg(board,idx,txt){
+  const el=board==="a-avatar"?document.getElementById("a-avatar"):
+    document.querySelector("#"+board+" .minion-card[data-idx='"+idx+"']");
+  if(!el)return;
+  const d=document.createElement("div");
+  d.className="hp-float";
+  d.style.cssText="position:absolute;font-family:JetBrains Mono,monospace;font-size:1.4rem;font-weight:900;color:"+(txt[0]==="-"? "var(--pink)":"var(--cyan)")+";text-shadow:0 0 10px currentColor;pointer-events:none;z-index:100;left:50%;top:10%;transform:translateX(-50%)";
+  d.textContent=txt;
+  var pos=el.getBoundingClientRect();
+  d.style.left=(pos.left+pos.width/2-15)+"px";
+  d.style.top=(pos.top-10)+"px";
+  document.body.appendChild(d);
+  setTimeout(()=>{d.style.opacity="0";d.style.transform="translateY(-30px)";setTimeout(()=>d.remove(),600);},50);
+}
 
 function eT(){
-const s=bt;if(s.end||s.pp)return;
-s.pp=1;s.p.df=0;s.a.df=0;
-document.getElementById('end-turn-btn').disabled=1;
-document.getElementById('battle-status').textContent='AI \u56de\u5408...';
-setTimeout(aT,600);}
+  const s=bt;if(s.end)return;
+  selAtk=-1;
+  s.p.en=0;
+  document.getElementById("end-turn-btn").disabled=1;
+  document.getElementById("battle-status").textContent="AI \u56de\u5408...";
+  setTimeout(aT,800);
+}
 
 function aT(){
-const s=bt;if(s.end)return;
-dw('a');s.a.me=Math.min(s.a.me+1,10);s.a.en=s.a.me;
-const sd=[...s.a.hd].sort((a,b)=>b.p-a.p);
-let pl=0;
-for(const c of sd){
-if(c.cost<=s.a.en){
-const i=s.a.hd.indexOf(c);s.a.en-=c.cost;s.a.hd.splice(i,1);pl=1;
-const d=c.p;
-if(d>0){const ad=Math.max(0,d-s.p.df);s.p.df=Math.max(0,s.p.df-d);s.p.hp-=ad;lg('\ud83d\udd34 AI '+c.name+' \u9020\u6210 '+ad+' \u70b9\u4f24\u5bb3','damage');}
-else if(c.d>0){s.a.df+=c.d;lg('\ud83d\udd35 AI '+c.name+' +'+c.d+' \u62a4\u76fe','defense');}
-if(s.p.hp<=0){eB(0);return;}
-break;}}
-if(!pl)lg('\u002f\u002f AI \u8df3\u8fc7\u51fa\u724c');
-s.n++;s.pp=0;s.p.df=0;s.a.df=0;
-dw('p');s.p.me=Math.min(s.p.me+1,10);s.p.en=s.p.me;
-uB();lg('\u002f\u002f \u7b2c '+s.n+' \u56de\u5408 \u2014 \u4f60\u7684\u884c\u52a8');}
+  const s=bt;if(s.end)return;
+  dw("a");
+  s.a.me=Math.min(s.a.me+1,10);
+  s.a.en=s.a.me;
+  // AI plays cards
+  for(let i=0;i<s.a.hd.length;i++){
+    const c=s.a.hd[i];
+    if(c.cost<=s.a.en&&s.a.bd.length<MB){
+      s.a.en-=c.cost;
+      c.hp_cur=c.hp||1;c.hp_max=c.hp||1;
+      s.a.bd.push(c);
+      s.a.hd.splice(i,1);i--;
+      lg("AI \u53ec\u5524 "+c.name,"special");
+    }
+  }
+  // AI attacks face
+  for(let i=0;i<s.a.bd.length;i++){
+    const c=s.a.bd[i];
+    if(c.atk>0){
+      s.p.hp-=c.atk;
+      lg("AI "+c.name+" \u653b\u51fb\u4f60! -"+c.atk,"damage");
+      showDmg("p-avatar",0,"-"+c.atk);
+    }
+  }
+  if(s.p.hp<=0){eB(0);return;}
+  // Start new turn
+  s.t++;
+  dw("p");
+  s.p.me=Math.min(s.p.me+1,10);
+  s.p.en=s.p.me;
+  selAtk=-1;
+  uB();
+  lg("// \u7b2c "+s.t+" \u56de\u5408 \u2014 \u4f60\u7684\u884c\u52a8","");
+}
 
-function eB(w){bt.end=1;if(w){document.getElementById('victory-modal').style.display='flex';lg('\u002f\u002f \u5165\u4fb5\u6210\u529f!','special');}else{document.getElementById('defeat-modal').style.display='flex';lg('\u002f\u002f \u8fde\u63a5\u65ad\u5f00...','damage');}}
-
+function eB(w){bt.end=1;if(w){document.getElementById("victory-modal").style.display="flex";lg("// \u5bf9\u624b\u9635\u4ea1! \u4f60\u83b7\u80dc!","special");}else{document.getElementById("defeat-modal").style.display="flex";lg("// \u4f60\u7684\u82f1\u96c4\u5012\u4e0b\u4e86...","damage");}}
 function resetBattle(){
-document.getElementById('victory-modal').style.display='none';
-document.getElementById('defeat-modal').style.display='none';
-bt=null;
-document.getElementById('battle-field').style.display='none';
-document.getElementById('battle-start-screen').style.display='flex';
-document.getElementById('battle-log').innerHTML='<div class="log-entry">\u002f\u002f \u6218\u6597\u65e5\u5fd7\u521d\u59cb\u5316...</div>';
-uH();}
-
-document.getElementById('battle-start-btn').addEventListener('click',sB);
-document.getElementById('end-turn-btn').addEventListener('click',eT);
-document.getElementById('restart-btn').addEventListener('click',resetBattle);
-rCAnim('all');rP();rL();uH();
+  document.getElementById("victory-modal").style.display="none";
+  document.getElementById("defeat-modal").style.display="none";
+  bt=null;selAtk=-1;
+  document.getElementById("battle-field").style.display="none";
+  document.getElementById("battle-start-screen").style.display="flex";
+  document.getElementById("battle-log").innerHTML='<div class="log-entry">// 战斗日志初始化...</div>';
+}
 setInterval(function(){
 const b=document.getElementById('battle-start-btn');
 b.disabled=dk.length<5;
