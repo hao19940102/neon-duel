@@ -184,7 +184,7 @@ const cl=CC[c.rarity];
 return '<div class="card" data-id="'+c.id+'" data-rarity="'+c.rarity+'" '+e+'>'+
 '<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
 '<div class="card-art"><div class="card-art-grid"></div>'+
-'<div class="card-art-icon" style="color:'+cl+'">'+c.icon+'</div></div>'+
+genArt(c,cl)+'</div>'+
 '<div class="card-body"><div class="card-name">'+c.name+'</div>'+
 '<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
 '<div class="card-stats">'+
@@ -208,7 +208,7 @@ const bg=n>0?'<span class="deck-count">'+n+'</span>':'';
 return '<div class="card '+cl+'" data-id="'+c.id+'">'+bg+
 '<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
 '<div class="card-art"><div class="card-art-grid"></div>'+
-'<div class="card-art-icon" style="color:'+CC[c.rarity]+'">'+c.icon+'</div></div>'+
+genArt(c,CC[c.rarity])+'</div>'+
 '<div class="card-body"><div class="card-name">'+c.name+'</div>'+
 '<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
 '<div class="card-stats">'+
@@ -290,7 +290,7 @@ const pl=!s.end&&c.cost<=s.p.en&&!s.pp;
 return '<div class="card '+(pl?'playable':'not-playable')+'" data-idx="'+i+'" data-rarity="'+c.rarity+'">'+
 '<span class="card-badge">'+c.rarity.toUpperCase()+'</span>'+
 '<div class="card-art"><div class="card-art-grid"></div>'+
-'<div class="card-art-icon" style="color:'+CC[c.rarity]+'">'+c.icon+'</div></div>'+
+genArt(c,CC[c.rarity])+'</div>'+
 '<div class="card-body"><div class="card-name">'+c.name+'</div>'+
 '<div class="card-type">'+c.type+' \u26a1'+c.cost+'</div>'+
 '<div class="card-stats">'+
@@ -383,7 +383,7 @@ function renderGrid(g,fl){
   g.innerHTML=fl.map((x,i)=>'<div class="card card-enter" data-id="'+x.id+'" data-rarity="'+x.rarity+'" style="animation-delay:'+(i*45)+'ms">'+
     '<span class="card-badge">'+x.rarity.toUpperCase()+'</span>'+
     '<div class="card-art"><div class="card-art-grid"></div><div class="card-holo"></div>'+
-    '<div class="card-art-icon" style="color:'+CC[x.rarity]+'">'+x.icon+'</div></div>'+
+    genArt(x,CC[x.rarity])+'</div>'+
     '<div class="card-border-glow"></div>'+
     '<div class="card-body"><div class="card-name">'+x.name+' <span class="cost-badge">⚡'+x.cost+'</span></div>'+
     '<div class="card-type">'+x.type+'</div><div class="card-divider"></div>'+
@@ -438,6 +438,40 @@ document.getElementById('filters').addEventListener('click',function(e){
 (function(){const h=document.createElement('div');h.style.cssText='text-align:center;font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:2px 0 8px;opacity:.6';
 h.textContent='// 拖拽卡牌可重新排序';
 document.querySelector('#view-collection .collection-header').after(h);})();
+
+function genArt(c,cl){
+  var id=c.id,w=200,h=280;
+  function g(e,s){return "<g filter="url(g"+id+")" opacity="."+s+"">"+e+"</g>";}
+  function circ(cx,cy,r,f){return "<circle cx=""+cx+"" cy=""+cy+"" r=""+r+"" fill=""+f+"" stroke=""+cl+"" stroke-width=".8"/>";}
+  function poly(pts,f){return "<polygon points=""+pts+"" fill=""+f+"" stroke=""+cl+"" stroke-width=".8"/>";}
+  function dots(n,cx,cy,r,sz){var d="";for(var i=0;i<n;i++){var a=(i/n)*Math.PI*2,t=cx+Math.cos(a)*r,s=cy+Math.sin(a)*r;d+=circ(t,s,sz,cl);}return g(d,4);}
+  function gc(cx,cy,r){return g(circ(cx,cy,r,cl),5)+circ(cx,cy,r,"transparent");}
+  var bg="<svg viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">"+
+    "<defs><filter id="g"+id+""><feGaussianBlur stdDeviation="3"/></filter>"+
+    "<linearGradient id="bg"+id+"" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color=""+cl+"22"/><stop offset="100%" stop-color="#00000044"/></linearGradient>"+
+    "<radialGradient id="cg"+id+""><stop offset="0%" stop-color=""+cl+"44"/><stop offset="100%" stop-color=""+cl+"00"/></radialGradient></defs>"+
+    "<rect width="200" height="280" fill="#0a0a14"/><rect width="200" height="280" fill="url(#bg"+id+")"/>"+
+    "<rect width="200" height="280" fill="none" stroke=""+cl+"" stroke-width=".3" opacity=".15" stroke-dasharray="8,8"/>"+
+    "<circle cx="100" cy="140" r="90" fill="url(#cg"+id+")"/>";
+  var art=gc(100,130,55);
+  if(id===1)art+=g(poly("100,55 148,80 148,130 148,180 100,205 52,180 52,130 52,80",cl+"55"),6)+poly("100,65 140,85 140,130 140,175 100,195 60,175 60,130 60,85","transparent")+g(circ(100,130,20,cl+"44"),5);
+  else if(id===2)art+=g("<path d="M60,180 Q80,90 100,100 Q120,110 110,70 Q100,30 130,60" fill="none" stroke=""+cl+"" stroke-width="3" stroke-linecap="round"/>",6)+circ(120,65,6,cl+"66")+g(dots(5,100,120,40,2),4);
+  else if(id===3)art+=gc(100,120,40)+g(poly("60,140 80,90 100,120 120,90 140,140",cl+"55"),6)+poly("65,145 80,100 100,125 120,100 135,145","transparent")+g(circ(100,110,8,cl+"77"),5);
+  else if(id===4)art+=gc(100,130,30)+g(poly("85,60 100,70 115,60 120,100 115,140 100,150 85,140 80,100",cl+"55"),6)+poly("88,70 100,78 112,70 115,100 112,130 100,138 88,130 85,100","transparent")+g(dots(8,100,130,35,1.5),4);
+  else if(id===5)art+=gc(100,130,30)+g("<path d="M50,160 Q70,90 90,120 Q110,150 130,90 Q150,30 170,80" fill="none" stroke=""+cl+"" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="6,4"/>",6)+circ(175,85,5,cl+"66")+g(dots(6,100,110,30,1.5),4);
+  else if(id===6)art+=gc(100,120,35)+g(circ(100,120,25,cl+"55"),6)+circ(100,120,20,"transparent")+g("<path d="M95,95 L105,95 L105,100 L100,105 L95,100 Z" fill=""+cl+"88"/>",5)+g(dots(12,100,120,40,1),4);
+  else if(id===7)art+=gc(100,115,25)+g(poly("95,60 105,60 105,100 115,110 115,125 85,125 85,110 95,100",cl+"55"),6)+poly("97,65 103,65 103,100 110,110 110,120 90,120 90,110 97,100","transparent")+g("<path d="M70,125 Q100,80 130,125" fill="none" stroke=""+cl+"" stroke-width="1.5"/>",4)+g("<path d="M55,140 Q100,60 145,140" fill="none" stroke=""+cl+"" stroke-width="1"/>",4);
+  else if(id===8)art+=gc(100,130,40)+g("<ellipse cx="100" cy="130" rx="35" ry="45" fill=""+cl+"33" stroke=""+cl+"" stroke-width="1.5"/>",5)+g("<path d="M75,115 Q90,95 100,115 Q110,95 125,115" fill="none" stroke=""+cl+"" stroke-width="2"/>",4)+g(dots(6,100,115,25,2),4);
+  else if(id===9)art+=gc(100,120,35)+g("<path d="M65,110 Q80,90 100,100 Q120,90 135,110 Q140,130 120,140 Q100,145 80,140 Q60,130 65,110 Z" fill=""+cl+"44" stroke=""+cl+"" stroke-width="1.5"/>",6)+g("<path d="M80,115 L90,125 L100,110 L110,125 L120,115" fill="none" stroke=""+cl+"" stroke-width="1.5"/>",4)+g(dots(6,100,120,30,1.5),4);
+  else if(id===10)art+=gc(100,130,40)+g(poly("100,50 130,90 120,140 80,140 70,90",cl+"55"),6)+poly("100,65 120,95 112,130 88,130 80,95","transparent")+g(poly("100,70 110,95 105,120 95,120 90,95",cl+"44"),5)+g(dots(5,100,120,35,2),4);
+  else if(id===11)art+=gc(100,120,30)+g(circ(100,120,35,cl+"33"),5)+circ(100,120,30,"transparent")+g("<path d="M100,80 L100,160 M60,120 L140,120" stroke=""+cl+"" stroke-width="1.5"/>",4)+g(circ(100,120,15,cl+"55"),5);
+  else if(id===12)art+=gc(100,120,30)+g("<path d="M70,90 Q100,70 130,90 Q150,120 130,150 Q100,170 70,150 Q50,120 70,90 Z" fill=""+cl+"44" stroke=""+cl+"" stroke-width="1.5"/>",6)+g("<path d="M100,120 L60,80 M100,120 L140,80 M100,120 L60,160 M100,120 L140,160" stroke=""+cl+"" stroke-width="1"/>",4)+circ(100,120,6,cl+"77");
+  else if(id===13)art+=gc(100,125,35)+g("<path d="M80,85 Q100,70 120,85 Q130,110 120,140 Q100,155 80,140 Q70,110 80,85 Z" fill=""+cl+"44" stroke=""+cl+"" stroke-width="1.5" stroke-dasharray="4,4"/>",6)+g(circ(88,108,4,cl+"77"),5)+g(circ(112,108,4,cl+"77"),5)+g("<path d="M90,125 L110,125" stroke=""+cl+"" stroke-width="1.5"/>",4);
+  else if(id===14)art+=gc(100,120,35)+g(circ(100,120,28,cl+"44"),6)+circ(100,120,23,"transparent")+g(circ(100,120,10,cl+"66"),5)+g("<path d="M100,90 Q120,100 120,120 Q120,140 100,150 Q80,140 80,120 Q80,100 100,90 Z" fill="none" stroke=""+cl+"" stroke-width="1.5"/>",4);
+  else if(id===15)art+=gc(100,130,40)+g(poly("70,80 100,60 130,80 140,110 130,140 100,160 70,140 60,110",cl+"44"),6)+poly("75,90 100,75 125,90 130,110 125,130 100,145 75,130 70,110","transparent")+g("<path d="M100,60 L100,160 M70,80 L130,80 M60,110 L140,110" stroke=""+cl+"" stroke-width=".8"/>",4);
+  else if(id===16)art+=gc(100,120,45)+g("<path d="M100,70 Q130,100 120,140 Q100,160 80,140 Q70,100 100,70 Z" fill=""+cl+"55" stroke=""+cl+"" stroke-width="2"/>",6)+g("<path d="M100,90 Q115,110 110,130 Q100,140 90,130 Q85,110 100,90 Z" fill=""+cl+"77" stroke=""+cl+"" stroke-width="1"/>",5)+g(dots(8,100,120,50,1.5),4);
+  return bg+art+"</svg>";
+}
 </script>
 </body>
 </html>
